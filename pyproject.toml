@@ -11,8 +11,12 @@ packages = [{include = "ai_audiobooks"}]
 python = "^3.10"
 openai = "^1.14.3"
 typer = "^0.10.0"
-pandoc = "^2.3"
 GitPython = "^3.1.42"
+guidance = "^0.1.13"
+python-dotenv = "^1.0.1"
+pypandoc = "^1.13"
+tiktoken = "^0.6.0"
+elevenlabs = "^1.0.1"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.3.4"
