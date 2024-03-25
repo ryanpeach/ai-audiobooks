@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "ai-audiobooks"
+version = "0.1.0"
+description = "A library for taking any arbitrary file and converting it into an audiobook using AI. Please do not use commercially."
+authors = ["Ryan Peach <rgpeach10@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "ai_audiobooks"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+openai = "^1.14.3"
+typer = "^0.10.0"
+typer-config = "^1.4.0"
+pandoc = "^2.3"
+GitPython = "^3.1.42"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.3.4"
+mypy = "^1.9.0"
+pre-commit = "^3.7.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
