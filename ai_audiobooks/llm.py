@@ -41,10 +41,10 @@ class LLMResponse:
 REGEX = "```regex\n(.*)\n```"
 PROMPT = (
     "Generate a regex that matches the very beginning of each chapter for given text. "
+    f"Wrap the regex in something which matches the pattern {REGEX}. "
+    "Begin your response with a plan for what the regex will accomplish. "
+    "It will end with the regex itself. "
 )
-PROMPT += f"Wrap the regex in something which matches the pattern {REGEX}. "
-PROMPT += "Begin your response with a plan for what the regex will accomplish. "
-PROMPT += "It will end with the regex itself. "
 
 
 @guidance
