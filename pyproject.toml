@@ -11,7 +11,6 @@ packages = [{include = "ai_audiobooks"}]
 python = "^3.10"
 openai = "^1.14.3"
 typer = "^0.10.0"
-typer-config = "^1.4.0"
 pandoc = "^2.3"
 GitPython = "^3.1.42"
 
