@@ -3,6 +3,7 @@ from pathlib import Path
 from git import Repo
 import shutil
 
+
 @dataclass
 class GitWorkingDirectory:
     repo: Repo
@@ -13,7 +14,10 @@ class GitWorkingDirectory:
     def text_file_path(self) -> Path:
         return self.working_dir / f"{self.input_file_copy.stem}.txt"
 
-def git_create_working_dir(*, input_file: Path, working_directory_root: Path) -> GitWorkingDirectory:
+
+def git_create_working_dir(
+    *, input_file: Path, working_directory_root: Path
+) -> GitWorkingDirectory:
     """Create a working directory for the input file."""
     # Create the working directory.
     working_dir = working_directory_root / input_file.stem
@@ -33,4 +37,6 @@ def git_create_working_dir(*, input_file: Path, working_directory_root: Path) ->
     repo.index.commit("Initial commit")
 
     # Return the working directory.
-    return GitWorkingDirectory(input_file_copy=input_file_copy, working_dir=working_dir)
+    return GitWorkingDirectory(
+        repo=repo, input_file_copy=input_file_copy, working_dir=working_dir
+    )

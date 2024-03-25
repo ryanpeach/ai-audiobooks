@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from pathlib import Path
-import shutil
 from typing import Optional
 from guidance import models, user, assistant, system, gen
 import tiktoken
@@ -27,7 +26,7 @@ def sample_text(*, llm: LLM, file: Path) -> str:
     tokens = llm.enc.encode(text)
 
     # Sample the first max_tokens - output_tokens tokens.
-    tokens = tokens[:llm.max_tokens - llm.output_tokens]
+    tokens = tokens[: llm.max_tokens - llm.output_tokens]
 
     # Decode the tokens.
     return llm.enc.decode(tokens)
@@ -69,10 +68,13 @@ def split_chapters_regex(*, llm: LLM, file: Path) -> LLMResponse:
 
 
 @guidance
-def try_again(*, llm: LLM, response: LLMResponse, wd: GitWorkingDirectory) -> LLMResponse:
+def try_again(
+    *, llm: LLM, response: LLMResponse, wd: GitWorkingDirectory
+) -> LLMResponse:
     text = sample_text(llm=llm, file=wd.text_file_path)
     lm = llm.model
     regex = "```regex\n(.*)\n```"
+    done = False
     with system():
         lm += "Generate a regex that matches the very beginning of each chapter for given text. "
         lm += f"Wrap the regex in something which matches the pattern {regex}. "
@@ -82,7 +84,7 @@ def try_again(*, llm: LLM, response: LLMResponse, wd: GitWorkingDirectory) -> LL
         lm += text
         lm += f"The regex you generated last was {response.regex}. "
         lm += f"Your plan was {response.plan}. "
-        lm += f"Here are some chapter splits you generated: "
+        lm += "Here are some chapter splits you generated: "
         for chapter in (wd.working_dir / "chapters").glob("chapter_*.txt"):
             lm += "```\n"
             lm += "\n".join(chapter.read_text().split("\n", 10))
@@ -104,7 +106,9 @@ def try_again(*, llm: LLM, response: LLMResponse, wd: GitWorkingDirectory) -> LL
     return LLMResponse(plan=lm.get("plan"), regex=lm.get("regex"))
 
 
-def split_chapters(*, llm: LLM, wd: GitWorkingDirectory, response: Optional[LLMResponse] = None) -> str:
+def split_chapters(
+    *, llm: LLM, wd: GitWorkingDirectory, response: Optional[LLMResponse] = None
+) -> None:
     if response is None:
         response = split_chapters_regex(llm=llm, file=wd.text_file_path)
     regex = re.compile(response.regex)
@@ -118,9 +122,11 @@ def split_chapters(*, llm: LLM, wd: GitWorkingDirectory, response: Optional[LLMR
         wd.repo.index.add([chapter_path])
 
     # Commit the new chapters.
-    wd.repo.commit(message="Split chapters")
+    wd.repo.commit("Split chapters")
 
     if typer.prompt("Please check the chapters. Are they correct? (yes/no)") != "yes":
         for chapter in (wd.working_dir / "chapters").glob("chapter_*.txt"):
             wd.repo.index.remove([chapter], working_tree=True)
-        split_chapters(llm=llm, wd=wd, response=try_again(llm=llm, response=response, wd=wd))
+        split_chapters(
+            llm=llm, wd=wd, response=try_again(llm=llm, response=response, wd=wd)
+        )
