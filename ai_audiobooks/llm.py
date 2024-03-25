@@ -38,22 +38,27 @@ class LLMResponse:
     regex: str
 
 
+REGEX = "```regex\n(.*)\n```"
+PROMPT = (
+    "Generate a regex that matches the very beginning of each chapter for given text. "
+)
+PROMPT += f"Wrap the regex in something which matches the pattern {REGEX}. "
+PROMPT += "Begin your response with a plan for what the regex will accomplish. "
+PROMPT += "It will end with the regex itself. "
+
+
 @guidance
 def split_chapters_regex(*, llm: LLM, file: Path) -> LLMResponse:
     text = sample_text(llm=llm, file=file)
     lm = llm.model
-    regex = "```regex\n(.*)\n```"
     done = False
     with system():
-        lm += "Generate a regex that matches the very beginning of each chapter for given text. "
-        lm += f"Wrap the regex in something which matches the pattern {regex}. "
-        lm += "Begin your response with a plan for what the regex will accomplish. "
-        lm += "It will end with the regex itself. "
+        lm += PROMPT
     with user():
         lm += text
     while not done:
         with assistant():
-            lm += gen("plan") + gen("regex", regex=regex)
+            lm += gen("plan") + gen("regex", regex=REGEX)
         # Validate the regex.
         if lm.get("regex") is None:
             with user():
@@ -73,13 +78,9 @@ def try_again(
 ) -> LLMResponse:
     text = sample_text(llm=llm, file=wd.text_file_path)
     lm = llm.model
-    regex = "```regex\n(.*)\n```"
     done = False
     with system():
-        lm += "Generate a regex that matches the very beginning of each chapter for given text. "
-        lm += f"Wrap the regex in something which matches the pattern {regex}. "
-        lm += "Begin your response with a plan for what the regex will accomplish. "
-        lm += "It will end with the regex itself. "
+        lm += PROMPT
     with user():
         lm += text
         lm += f"The regex you generated last was {response.regex}. "
@@ -92,7 +93,7 @@ def try_again(
         lm += "I don't believe this is correct. Please try again. "
     while not done:
         with assistant():
-            lm += gen("plan") + gen("regex", regex=regex)
+            lm += gen("plan") + gen("regex", regex=REGEX)
         # Validate the regex.
         if lm.get("regex") is None:
             with user():
