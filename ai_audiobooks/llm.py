@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
+from dotenv import load_dotenv
 from guidance import models, user, assistant, system, gen
 import tiktoken
 import guidance
@@ -10,9 +11,13 @@ import typer
 from ai_audiobooks.git import GitWorkingDirectory
 
 
+load_dotenv()  # take environment variables from .env.
+
+
 @dataclass
 class LLM:
-    model = models.OpenAI("gpt-4-turbo-preview")
+    name = "gpt-4-turbo-preview"
+    guidance_model = models.OpenAIChat("gpt-4-turbo-preview")
     max_tokens = 128_000
     output_tokens = 8_000
     enc = tiktoken.encoding_for_model("gpt-4-turbo-preview")
@@ -50,7 +55,7 @@ PROMPT = (
 @guidance
 def split_chapters_regex(*, llm: LLM, file: Path) -> LLMResponse:
     text = sample_text(llm=llm, file=file)
-    lm = llm.model
+    lm = llm.guidance_model
     done = False
     with system():
         lm += PROMPT
@@ -77,7 +82,7 @@ def try_again(
     *, llm: LLM, response: LLMResponse, wd: GitWorkingDirectory
 ) -> LLMResponse:
     text = sample_text(llm=llm, file=wd.text_file_path)
-    lm = llm.model
+    lm = llm.guidance_model
     done = False
     with system():
         lm += PROMPT

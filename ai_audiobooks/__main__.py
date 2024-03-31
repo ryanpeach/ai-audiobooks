@@ -1,12 +1,10 @@
 from pathlib import Path
-from dotenv import load_dotenv
 from typer import Argument, Typer, Option
 
 from ai_audiobooks.fix_text import iterative_fix_text
 from ai_audiobooks.git import GitWorkingDirectory, git_create_working_dir
+from ai_audiobooks.llm import LLM
 from ai_audiobooks.pandoc import convert_to_text
-
-load_dotenv()  # take environment variables from .env.
 
 app = Typer()
 
@@ -34,7 +32,7 @@ def main(
         convert_to_text(git_repo, force_ocr=force_ocr)
     else:
         git_repo = GitWorkingDirectory.from_file(input_file)
-    iterative_fix_text(git_repo)
+    iterative_fix_text(llm=LLM(), git=git_repo)
 
 
 if __name__ == "__main__":

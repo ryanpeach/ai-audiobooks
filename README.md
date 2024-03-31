@@ -26,3 +26,15 @@ pipx install poetry
 poetry install
 poetry run pre-commit install
 ```
+
+## OpenAI
+
+You will need to create an account on OpenAI and get an API key.
+You can do that [here](https://platform.openai.com/signup)
+
+Then you will need to set the API key as an environment variable. Create a `.env`
+file in the root of the project and add the following:
+
+```
+OPENAI_API_KEY=your-api-key
+```
