@@ -4,3 +4,6 @@ lint:
 
 fmt:
   poetry run ruff format
+
+test:
+  poetry run pytest -k "not slow"

@@ -14,9 +14,13 @@ class GitWorkingDirectory:
     def text_file_path(self) -> Path:
         return self.working_dir / f"{self.input_file_copy.stem}.txt"
 
+    def delete(self) -> None:
+        """Delete the working directory."""
+        shutil.rmtree(self.working_dir)
+
 
 def git_create_working_dir(
-    *, input_file: Path, working_directory_root: Path
+    *, input_file: Path, working_directory_root: Path = Path("output")
 ) -> GitWorkingDirectory:
     """Create a working directory for the input file."""
     # Create the working directory.
@@ -31,7 +35,7 @@ def git_create_working_dir(
     shutil.copy(input_file, input_file_copy)
 
     # Add the input file to the git repository.
-    repo.index.add([input_file_copy])
+    repo.index.add([input_file_copy.relative_to(working_dir)])
 
     # Make the initial commit.
     repo.index.commit("Initial commit")

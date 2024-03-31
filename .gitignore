@@ -1,5 +1,5 @@
 .env
-working_dir/
+output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

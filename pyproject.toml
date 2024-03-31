@@ -17,11 +17,16 @@ python-dotenv = "^1.0.1"
 pypandoc = "^1.13"
 tiktoken = "^0.6.0"
 elevenlabs = "^1.0.1"
+pymupdf = "^1.24.0"
+pytesseract = "^0.3.10"
+pillow = "^10.2.0"
+rich = "^13.7.1"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.3.4"
 mypy = "^1.9.0"
 pre-commit = "^3.7.0"
+pytest = "^8.1.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -29,3 +34,10 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
 ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+markers = [
+  "openai: Requires openai connectivity",
+  "slow: mark test as slow.",
+]
+asyncio_mode = "auto"

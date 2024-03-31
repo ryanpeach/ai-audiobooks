@@ -120,7 +120,7 @@ def split_chapters(
     for i, chapter in enumerate(chapters):
         chapter_path = wd.working_dir / "chapters" / f"chapter_{i}.txt"
         chapter_path.write_text(chapter)
-        wd.repo.index.add([chapter_path])
+        wd.repo.index.add([chapter_path.relative_to(wd.working_dir)])
 
     # Commit the new chapters.
     wd.repo.commit("Split chapters")
