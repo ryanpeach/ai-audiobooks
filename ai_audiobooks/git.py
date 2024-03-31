@@ -18,6 +18,15 @@ class GitWorkingDirectory:
         """Delete the working directory."""
         shutil.rmtree(self.working_dir)
 
+    @staticmethod
+    def from_file(file: Path) -> "GitWorkingDirectory":
+        """Create a GitWorkingDirectory from a file."""
+        working_dir = file.parent
+        repo = Repo(working_dir)
+        return GitWorkingDirectory(
+            repo=repo, input_file_copy=file, working_dir=working_dir
+        )
+
 
 def git_create_working_dir(
     *, input_file: Path, working_directory_root: Path = Path("output")
