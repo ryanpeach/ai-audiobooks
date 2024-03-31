@@ -1,9 +1,8 @@
 from pathlib import Path
 from dotenv import load_dotenv
-from typer import Typer, Option
+from typer import Argument, Typer, Option
 
 from ai_audiobooks.git import git_create_working_dir
-from ai_audiobooks.llm import LLM, split_chapters
 from ai_audiobooks.pandoc import convert_to_text
 
 load_dotenv()  # take environment variables from .env.
@@ -13,7 +12,7 @@ app = Typer()
 
 @app.command()
 def main(
-    input_file: Path = Option(..., help="The input file to process."),
+    input_file: Path = Argument(..., help="The input file to process."),
     working_directory_root: Path = Option(
         Path("output"),
         help="The root directory for ai working directories. This should be in your .gitignore.",
@@ -27,7 +26,6 @@ def main(
         input_file=input_file, working_directory_root=working_directory_root
     )
     convert_to_text(git_repo, force_ocr=force_ocr)
-    split_chapters(llm=LLM(), wd=git_repo)
 
 
 if __name__ == "__main__":
